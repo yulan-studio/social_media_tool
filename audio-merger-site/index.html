@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="在浏览器中私密地调整、排序并拼接音频，导出 MP3。">
+  <title>声音拼接工作台</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+  <script type="module" defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="声音拼接工作台首页"><span class="brand-mark">S</span><span>声音拼接工作台</span></a>
+    <span class="privacy"><i></i> 本地处理 · 文件不会上传</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">SOUND STITCH STUDIO</p>
+      <h1>把零散的声音，<br><em>拼成完整的一段。</em></h1>
+      <p class="lead">排序、调节音量 / 速度 / 音调，精确设置每段间隔，然后一次导出 MP3。</p>
+    </section>
+
+    <section class="workspace" aria-label="音频编辑区">
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="添加音频文件">
+        <input id="fileInput" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac" multiple hidden>
+        <div class="upload-icon">＋</div>
+        <div><strong>拖入音频文件</strong><span>或点击选择 · 支持 MP3、WAV、M4A、AAC、OGG 等</span></div>
+        <button class="btn primary" type="button">选择文件</button>
+      </div>
+
+      <div class="editor-head">
+        <div><span id="countLabel">尚未添加音频</span><small>拖动卡片即可调整顺序</small></div>
+        <div class="head-actions"><button id="resetBtn" class="btn ghost" type="button">恢复默认</button><button id="clearBtn" class="btn ghost danger" type="button">全部清空</button></div>
+      </div>
+
+      <div id="emptyState" class="empty-state">
+        <div class="empty-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p>你的音频片段会显示在这里</p>
+      </div>
+      <div id="trackList" class="track-list" aria-live="polite"></div>
+    </section>
+
+    <section class="export-bar">
+      <div class="summary">
+        <span>预计成品</span><strong id="totalDuration">00:00</strong><small id="summaryText">0 个片段</small>
+      </div>
+      <label class="quality">音质<select id="bitrate"><option value="128">标准 · 128 kbps</option><option value="192" selected>高品质 · 192 kbps</option><option value="256">超高品质 · 256 kbps</option><option value="320">极高品质 · 320 kbps</option></select></label>
+      <button id="exportBtn" class="btn export" type="button" disabled><span>导出 MP3</span><small>浏览器本地合成</small></button>
+    </section>
+  </main>
+
+  <div id="progressModal" class="modal" hidden>
+    <div class="modal-card" role="status" aria-live="polite">
+      <div class="disc"><span></span></div>
+      <h2>正在合成</h2><p id="progressText">准备音频…</p>
+      <div class="progress"><i id="progressBar"></i></div>
+      <small>请暂时不要关闭页面</small>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
