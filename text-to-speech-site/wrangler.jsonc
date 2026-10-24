@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+
+  "name": "text-to-speech-site",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-24",
+
+  // 保持当前 WebSocket 中继代码的二进制和关闭行为
+  "compatibility_flags": [
+    "web_socket_manual_reply_to_close",
+    "no_websocket_standard_binary_type"
+  ],
+
+  "workers_dev": true,
+
+  "observability": {
+    "enabled": true
+  }
+}
