@@ -13,16 +13,11 @@ async function relay(request) {
   target.search = incoming.search;
   const upstreamResponse = await fetch(target, {headers:{Upgrade:'websocket',Origin:EDGE_ORIGIN,'User-Agent':EDGE_UA,'Cache-Control':'no-cache',Pragma:'no-cache'}});
   const upstream = upstreamResponse.webSocket;
-  if (!upstream) return new Response('Speech service unavailable', {status:502});
-  const pair = new WebSocketPair();
-  const client = pair[0], server = pair[1];
-  server.accept(); upstream.accept();
-  server.addEventListener('message', event => { try { upstream.send(event.data); } catch {} });
-  upstream.addEventListener('message', event => { try { server.send(event.data); } catch {} });
-  const closeBoth = (event) => { try { server.close(event.code || 1000, event.reason || ''); } catch {} try { upstream.close(event.code || 1000, event.reason || ''); } catch {} };
-  server.addEventListener('close', closeBoth); upstream.addEventListener('close', closeBoth);
-  server.addEventListener('error', () => closeBoth({code:1011,reason:'Relay error'})); upstream.addEventListener('error', () => closeBoth({code:1011,reason:'Upstream error'}));
-  return new Response(null, {status:101, webSocket:client});
+  if (!upstream) {
+    console.error('Edge TTS WebSocket handshake failed', upstreamResponse.status, upstreamResponse.statusText);
+    return new Response('Speech service unavailable', {status:502});
+  }
+  return new Response(null, {status:101, webSocket:upstream});
 }
 
 export default { async fetch(request) {
