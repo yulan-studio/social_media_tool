@@ -2,7 +2,12 @@ const page = "<!doctype html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"
 
 const EDGE_ENDPOINT = 'https://api.msedgeservices.com/tts/cognitiveservices/websocket/v1';
 const EDGE_ORIGIN = 'chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold';
-const EDGE_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0';
+const EDGE_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0';
+
+function muid() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
 
 async function relay(request) {
   if ((request.headers.get('Upgrade') || '').toLowerCase() !== 'websocket') return new Response('WebSocket required', {status:426});
@@ -11,7 +16,7 @@ async function relay(request) {
   if (origin && origin !== incoming.origin) return new Response('Forbidden', {status:403});
   const target = new URL(EDGE_ENDPOINT);
   target.search = incoming.search;
-  const upstreamResponse = await fetch(target, {headers:{Upgrade:'websocket',Origin:EDGE_ORIGIN,'User-Agent':EDGE_UA,'Cache-Control':'no-cache',Pragma:'no-cache'}});
+  const upstreamResponse = await fetch(target, {headers:{Upgrade:'websocket',Origin:EDGE_ORIGIN,'User-Agent':EDGE_UA,'Accept-Language':'en-US,en;q=0.9','Cookie':'MUID='+muid(),'Cache-Control':'no-cache',Pragma:'no-cache'}});
   const upstream = upstreamResponse.webSocket;
   if (!upstream) {
     console.error('Edge TTS WebSocket handshake failed', upstreamResponse.status, upstreamResponse.statusText);
